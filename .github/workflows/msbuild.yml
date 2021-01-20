@@ -43,26 +43,30 @@ jobs:
       shell: powershell
       run: Compress-7Zip "AgOpenGPS" -ArchiveFileName "AgOpenGPS.zip" -Format Zip
       
+    - name: set NOW
+      run: |
+        echo "::set-env name=NOW::v$(date +'%Y%m%d.%H%M%S')"
+      
     - name: Create Release
       id: create_release
       uses: actions/create-release@latest
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
-        tag_name: ${{ github.ref }}
-        release_name: Release ${{ github.ref }}
+        tag_name: ${{ env.NOW }}
+        release_name: Release ${{ env.NOW }}
         body: |
           Automated Release by GitHub Action CI
         draft: false
         prerelease: true
         
-    - name: Upload Release Asset (x64)
-      id: upload-release-asset-x64
+    - name: Upload Release Asset
+      id: upload-release-asset
       uses: actions/upload-release-asset@v1
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: ./AgOpenGPS.ZIP
-        asset_name: AgOpenGPS.ZIP
+        asset_path: ./AgOpenGPS.zip
+        asset_name: AgOpenGPS.zip
         asset_content_type: application/zip
